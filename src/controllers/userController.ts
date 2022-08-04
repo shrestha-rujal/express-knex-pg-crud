@@ -1,16 +1,20 @@
-import { StatusCodes } from 'http-status-codes';
-import { NextFunction, Request, Response } from 'express';
+import { StatusCodes } from "http-status-codes";
+import { NextFunction, Request, Response } from "express";
 
-import logger from '../misc/logger';
-import CustomError from '../misc/CustomError';
-import * as userService from '../services/userService';
+import logger from "../misc/logger";
+import CustomError from "../misc/CustomError";
+import * as userService from "../services/userService";
 
 /**
  * Get all users.
  * @param {Request} req
  * @param {Response} res
  */
-export const getAllUsers = (req: Request, res: Response, next: NextFunction) => {
+export const getAllUsers = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   userService
     .getAllUsers()
     .then((data) => res.json(data))
@@ -27,6 +31,24 @@ export const getUser = (req: Request, res: Response, next: NextFunction) => {
 
   userService
     .getUser(+userId)
+    .then((data) => res.json(data))
+    .catch((err) => next(err));
+};
+
+/**
+ * Get posts for a single user.
+ * @param {Request} req
+ * @param {Response} res
+ */
+export const getUserPosts = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { userId } = req.params;
+
+  userService
+    .getUserPosts(+userId)
     .then((data) => res.json(data))
     .catch((err) => next(err));
 };
@@ -55,8 +77,11 @@ export const updateUser = (req: Request, res: Response, next: NextFunction) => {
   const { name, email } = req.body;
 
   if (!userId || !name || !email) {
-    logger.error('Missing parameters userId or name or email');
-    throw new CustomError('UserId, Name and email are required', StatusCodes.BAD_REQUEST);
+    logger.error("Missing parameters userId or name or email");
+    throw new CustomError(
+      "UserId, Name and email are required",
+      StatusCodes.BAD_REQUEST
+    );
   }
 
   userService
